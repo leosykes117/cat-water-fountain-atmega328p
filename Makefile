@@ -31,12 +31,12 @@ build:
 compile:
 	@mkdir -p $(BUILD_DIR)
 	docker run --rm \
-		-v "$(ROOT)/src:/work/src:ro" \
-		-v "$(ROOT)/include:/work/include:ro" \
-		-v "$(ROOT)/$(BUILD_DIR):/work/build" \
+		--mount type=bind,src=$(ROOT)/src,dst=/work/src,ro \
+		--mount type=bind,src=$(ROOT)/include,dst=/work/include,ro \
+		--mount type=bind,src=$(ROOT)/$(BUILD_DIR),dst=/work/build \
 		-w /work \
 		$(IMAGE) sh -lc '\
-		make -f /work/src/Makefile BUILD_DIR=/work/build && \
+		make -f /work/src/Makefile BUILD_DIR=/work/build SRC_DIR=/work/src INC_DIR=/work/include all && \
 		echo "" && echo "=== Artifacts ===" && \
 		find /work/build -maxdepth 1 -type f \( -name "*.hex" -o -name "*.elf" \) -print \
 		'
@@ -51,4 +51,4 @@ flash: compile
 
 ## Remove build artifacts
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)/*.o
