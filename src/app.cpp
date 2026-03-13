@@ -1,3 +1,7 @@
+
+// app.cpp
+// Implements the main application logic for the cat water fountain.
+// Handles pump control cycles, water level checks, and system safety.
 #include "app.hpp"
 
 #include "config.hpp"

@@ -1,3 +1,8 @@
+
+// config.hpp
+// Contains global configuration constants for the cat water fountain firmware.
+// Defines pump PWM behavior, timing parameters, and sensor filtering settings.
+// Centralizes all tunable values for easy adjustment and maintainability.
 #pragma once
 
 #include <stdint.h>
