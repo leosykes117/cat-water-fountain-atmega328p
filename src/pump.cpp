@@ -14,9 +14,9 @@ namespace
 
     uint16_t percent_to_duty(uint8_t percent)
     {
-        if (percent > 100)
+        if (percent > config::kMaxPercent)
         {
-            percent = 100;
+            percent = config::kMaxPercent;
         }
 
         uint16_t duty = static_cast<uint16_t>(

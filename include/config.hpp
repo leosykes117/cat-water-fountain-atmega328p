@@ -14,9 +14,10 @@ namespace config
     // constexpr uint32_t kCpuHz = 8000000UL;
 
     // Pump PWM behavior
-    constexpr uint8_t kPumpTopPercent = 50;
+    constexpr uint8_t kPumpTopPercent = 60;
     constexpr uint8_t kPumpBottomPercent = 8;
     constexpr uint8_t kPumpBoostPercent = 70;
+    constexpr uint8_t kMaxPercent = 100;
 
     constexpr uint16_t kPumpBoostMs = 800;
     constexpr uint16_t kPumpStartHoldMs = 1000;

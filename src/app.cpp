@@ -66,8 +66,8 @@ namespace app
                 _delay_ms(200);
                 continue;
             }
-            // pump::set_percent(config::kPumpTopPercent);
-            run_pump_cycle();
+            pump::set_percent(config::kPumpTopPercent);
+            //  run_pump_cycle();
         }
     }
 
