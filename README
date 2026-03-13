@@ -1,0 +1,85 @@
+# cat-fountain
+
+ATmega328P firmware for a cat water fountain. Controls a DC pump via a MOSFET
+module and monitors water level with a float switch.
+
+## Hardware
+
+| Component    | Detail                         |
+| ------------ | ------------------------------ |
+| MCU          | ATmega328P @ 8 MHz (ext. XTAL) |
+| Pump driver  | IRF520 MOSFET module           |
+| Pump PWM pin | OC1A — PB1                     |
+| Float sensor | PD2 (INPUT_PULLUP)             |
+| Programmer   | USBasp via avrdude             |
+
+### Float sensor wiring
+
+```
+Float switch leg A → GND
+Float switch leg B → PD2 (uses internal pull-up)
+
+Float UP   (water present) → switch OPEN  → PD2 reads HIGH
+Float DOWN (tank empty)    → switch CLOSED → PD2 reads LOW
+```
+
+## Project layout
+
+```
+cat-fountain/
+├── Makefile            ← top-level: build image, compile, flash
+├── docker/
+│   └── Dockerfile      ← Alpine image with avr-gcc toolchain
+└── src/
+    ├── Makefile        ← inner Makefile (runs inside the container)
+    └── main.cpp        ← firmware source
+```
+
+## Workflow
+
+### 1. Build the Docker image (once)
+
+```sh
+make build
+```
+
+### 2. Compile firmware
+
+```sh
+make compile
+# output: build/cat-fountain.hex + build/cat-fountain.elf
+```
+
+### 3. Flash to MCU (avrdude must be installed on host)
+
+```sh
+make flash
+```
+
+Or flash manually:
+
+```sh
+avrdude -c usbasp -p atmega328p -P usb \
+        -U flash:w:build/cat-fountain.hex:i
+```
+
+> **Important — fuse bits:** the firmware assumes an external 8 MHz crystal.
+> Make sure your fuses are set accordingly, e.g.:
+>
+> ```sh
+> avrdude -c usbasp -p atmega328p -P usb \
+>         -U lfuse:w:0xFF:m -U hfuse:w:0xD9:m
+> ```
+>
+> (CKSEL=1111, SUT=11 → full-swing crystal; CKDIV8 cleared)
+
+## Pump control logic
+
+- **PWM**: Timer1 Fast-PWM ~500 Hz, duty driven by `pump::RUN_PERCENT` (default 40 %).
+- **Soft-start**: every time the pump is enabled it runs at 100 % for 800 ms to
+  ensure the impeller starts, then drops to the operating duty.
+- **Water level hysteresis**:
+  - Pump **stops** after 20 consecutive "empty" reads (~200 ms).
+  - Pump **restarts** only after 60 consecutive "full" reads (~600 ms).
+  - This prevents rapid on/off cycling when the float is near the threshold.
+- **Failsafe watchdog**: WDT @ 1 s — resets the MCU if the main loop stalls.
