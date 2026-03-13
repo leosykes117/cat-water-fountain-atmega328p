@@ -75,11 +75,10 @@ avrdude -c usbasp -p atmega328p -P usb \
 
 ## Pump control logic
 
-- **PWM**: Timer1 Fast-PWM ~500 Hz, duty driven by `pump::RUN_PERCENT` (default 40 %).
+- **PWM**: Timer1 Fast-PWM ~500 Hz, duty driven by `pump::set_percent`.
 - **Soft-start**: every time the pump is enabled it runs at 100 % for 800 ms to
   ensure the impeller starts, then drops to the operating duty.
 - **Water level hysteresis**:
   - Pump **stops** after 20 consecutive "empty" reads (~200 ms).
   - Pump **restarts** only after 60 consecutive "full" reads (~600 ms).
   - This prevents rapid on/off cycling when the float is near the threshold.
-- **Failsafe watchdog**: WDT @ 1 s — resets the MCU if the main loop stalls.
