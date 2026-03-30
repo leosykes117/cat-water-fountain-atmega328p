@@ -20,6 +20,8 @@ PORT       ?= usb
 # Derived
 HEX_FILE   := $(BUILD_DIR)/cat-fountain.hex
 
+ADDIONAL_FLAGS ?=
+
 # -----------------------------------------------------------------------------
 .PHONY: build compile flash clean
 
@@ -36,8 +38,12 @@ compile:
 		--mount type=bind,src=$(ROOT)/$(BUILD_DIR),dst=/work/build \
 		-w /work \
 		$(IMAGE) sh -lc '\
-		make -f /work/src/Makefile BUILD_DIR=/work/build SRC_DIR=/work/src INC_DIR=/work/include all && \
-		echo "" && echo "=== Artifacts ===" && \
+		make -f /work/src/Makefile \
+			ADDIONAL_FLAGS="$(ADDIONAL_FLAGS)" \
+			BUILD_DIR=/work/build \
+			SRC_DIR=/work/src \
+			INC_DIR=/work/include all \
+		&& echo "" && echo "=== Artifacts ===" && \
 		find /work/build -maxdepth 1 -type f \( -name "*.hex" -o -name "*.elf" \) -print \
 		'
 
