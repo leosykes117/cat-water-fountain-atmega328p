@@ -7,17 +7,33 @@
 
 #include <stdint.h>
 
+// Pump PWM behavior
+#ifndef K_PUMP_TOP_PERCENT
+#define K_PUMP_TOP_PERCENT 80
+#endif
+
+#ifndef K_PUMP_BOTTOM_PERCENT
+#define K_PUMP_BOTTOM_PERCENT 8
+#endif
+
+#ifndef K_PUMP_BOOST_PERCENT
+#define K_PUMP_BOOST_PERCENT 70
+#endif
+
+#ifndef K_MAX_PERCENT
+#define K_MAX_PERCENT 100
+#endif
+
 namespace config
 {
 
     // MCU / clock
     // constexpr uint32_t kCpuHz = 8000000UL;
 
-    // Pump PWM behavior
-    constexpr uint8_t kPumpTopPercent = 60;
-    constexpr uint8_t kPumpBottomPercent = 8;
-    constexpr uint8_t kPumpBoostPercent = 70;
-    constexpr uint8_t kMaxPercent = 100;
+    constexpr uint8_t kPumpTopPercent = K_PUMP_TOP_PERCENT;
+    constexpr uint8_t kPumpBottomPercent = K_PUMP_BOTTOM_PERCENT;
+    constexpr uint8_t kPumpBoostPercent = K_PUMP_BOOST_PERCENT;
+    constexpr uint8_t kMaxPercent = K_MAX_PERCENT;
 
     constexpr uint16_t kPumpBoostMs = 800;
     constexpr uint16_t kPumpStartHoldMs = 1000;

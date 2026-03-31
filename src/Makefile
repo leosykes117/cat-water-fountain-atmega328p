@@ -1,6 +1,7 @@
 PROJECT    := cat-fountain
 MCU        := atmega328p
 F_CPU      := 8000000UL
+ADDIONAL_FLAGS ?=
 
 CXX        := avr-g++
 OBJCOPY    := avr-objcopy
@@ -18,7 +19,7 @@ SOURCES    := $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS    := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 DEPENDS    := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.d,$(SOURCES))
 
-CPPFLAGS   := -I$(INC_DIR) -DF_CPU=$(F_CPU) -MMD -MP
+CPPFLAGS   := -I$(INC_DIR) -DF_CPU=$(F_CPU) $(ADDIONAL_FLAGS) -MMD -MP
 CXXFLAGS   := \
 	-mmcu=$(MCU) \
 	-std=gnu++17 \
@@ -39,11 +40,11 @@ LDFLAGS    := -mmcu=$(MCU) -Wl,--gc-sections
 all: $(HEX)
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 
 # Compilar desde el directorio raíz, sin cambiar de directorio
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(ELF): $(OBJECTS)
 	$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
