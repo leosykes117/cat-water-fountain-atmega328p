@@ -5,8 +5,10 @@
 #include "app.hpp"
 
 #include "config.hpp"
+#include "lcd.hpp"
 #include "level_sensor.hpp"
 #include "pump.hpp"
+#include "twi.hpp"
 
 #include <util/delay.h>
 
@@ -54,19 +56,36 @@ namespace app
 
     void run()
     {
-        pump::init();
-        level_sensor::init();
+        twi::init();
+        lcd::init();
 
+        lcd::clear();
+        lcd::set_cursor(0, 0);
+
+        lcd::print("Init pump...");
+        pump::init();
+        _delay_ms(1500);
+
+        lcd::clear();
+        lcd::print("Init sensor...");
+        level_sensor::init();
+        _delay_ms(1500);
         while (1)
         {
             // Failsafe: si el agua no está confirmadamente OK, no arrancamos
             if (!level_sensor::water_ok_confirmed())
             {
                 pump::off();
-                _delay_ms(200);
+                lcd::set_cursor(0, 0);
+                _delay_ms(825);
+                lcd::clear();
+                lcd::print("No water!");
+                lcd::marquee("Pump off, check sensor", 1, 825);
+                _delay_ms(825);
+                //_delay_ms(200);
                 continue;
             }
-            //pump::set_percent(config::kPumpTopPercent);
+            // pump::set_percent(config::kPumpTopPercent);
             run_pump_cycle();
         }
     }
